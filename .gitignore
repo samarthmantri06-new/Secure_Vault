@@ -1,0 +1,17 @@
+# Sensitive Credentials
+client_secret.json
+token.json
+database.db
+
+# Large Folders
+photos/
+__pycache__/
+.venv/
+
+# Storage & Temp Folders
+storage_1/
+storage_2/
+storage_3/
+temp_uploads/
+encrypted_output/
+restored_files/

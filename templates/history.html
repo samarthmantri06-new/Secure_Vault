@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault | Activity History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css4.css">
+    
+    <style>
+        /* Custom styles for the History Cards */
+        .history-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* Custom scrollbar for the history list */
+        .history-container::-webkit-scrollbar { width: 8px; }
+        .history-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .history-container::-webkit-scrollbar-thumb { background-color: #00d2ff; border-radius: 4px; }
+
+        .history-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+        }
+
+        .history-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d2ff;
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.1);
+        }
+
+        .history-icon {
+            font-size: 28px;
+            margin-right: 20px;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .icon-lock { color: #ff4d4d; }   /* Red for locking/encrypting */
+        .icon-unlock { color: #2ecc71; } /* Green for unlocking/decrypting */
+
+        .history-details { flex-grow: 1; }
+        .history-title { font-weight: 600; font-size: 1.1rem; color: white; margin-bottom: 4px; }
+        .history-meta { font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); }
+        .history-right { text-align: right; }
+        .history-date { font-size: 0.9rem; color: #00d2ff; font-weight: 500; }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/" style="position: absolute; top: 20px; left: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; z-index: 100; text-decoration: none;">
+        &larr; Back to Dashboard
+    </a>
+
+    <section id="upload-section">
+        <h1>Activity History</h1>
+        <p class="subtitle">Review your recently encrypted vaults and restored files.</p>
+
+        <div class="history-container">
+            
+            {% if history %}
+                {% for item in history %}
+                <div class="history-card">
+                    <div class="history-icon {% if item[0] == 'Encrypt' %}icon-lock{% else %}icon-unlock{% endif %}">
+                        <i class="fa-solid {% if item[0] == 'Encrypt' %}fa-file-shield{% else %}fa-unlock-keyhole{% endif %}"></i>
+                    </div>
+                    
+                    <div class="history-details">
+                        <div class="history-title">{{ item[1] }}</div>
+                        <div class="history-meta">Action: {% if item[0] == 'Encrypt' %}Encrypted & Vaulted{% else %}Vault Unlocked & Restored{% endif %}</div>
+                        <div class="history-meta" style="font-family: monospace; color: #aaa;">Vault ID: {{ item[2] }}</div>
+                    </div>
+                    
+                    <div class="history-right">
+                        <div class="history-date">{{ item[3] }}</div>
+                        <div class="status-badge">Success</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">No vault activity found yet. Go encrypt some files!</p>
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</body>
+</html>

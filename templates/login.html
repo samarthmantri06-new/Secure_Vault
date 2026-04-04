@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault | Login</title>
+    <link rel="stylesheet" href="/static/css1.css">
+</head>
+<body>
+
+    <a href="/" style="position: absolute; top: 20px; left: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; text-decoration: none;">
+        &larr; Back to Home
+    </a>
+
+    <header>
+        <h1>Welcome Back</h1>
+        <p>Enter your credentials to access your vault</p>
+    </header>
+
+    <main>
+        <form action="/login" method="POST">
+            <fieldset>
+                <legend>Secure Login</legend>
+                
+                <p>
+                    <label for="user-identifier">Username:</label>
+                    <input type="text" name="username" id="user-identifier" placeholder="e.g. sam or sam@securevault" required autocomplete="username">
+                </p>
+                
+                <p>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" placeholder="Enter your master password" required>
+                </p>
+                
+                <button type="submit">Unlock Vault</button>
+                
+                <p style="text-align: center; margin-top: 15px; color: white;">
+                    New user? <a href="/signup">Register here</a>
+                </p>
+            </fieldset>
+        </form>
+    </main>
+    
+</body>
+</html> 

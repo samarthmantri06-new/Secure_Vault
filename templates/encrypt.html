@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault | Encrypt Files</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css4.css">
+</head>
+<body>
+
+    <a href="/" style="position: absolute; top: 20px; left: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; z-index: 100; text-decoration: none;">
+        &larr; Back to Dashboard
+    </a>
+
+    <section id="upload-section">
+        <h1>Secure Your Data</h1>
+        <p class="subtitle">Zero-knowledge encryption. Please read the critical rules below before proceeding.</p>
+
+        <div class="instruction-panel">
+            <p class="instruction-title">⚠ Important Instructions</p>
+            <ol>
+                <li>Once submitted, your files will be encrypted and you will receive a <b>Vault ID</b>.</li>
+                <li>You must <b>download</b> the resulting <b>.enc</b> files immediately. We do NOT store your files on our servers.</li>
+                <li><b>DO NOT RENAME</b> the downloaded files! The filename (e.g., <i>userid_vaultid_filename.enc</i>) is strictly required to identify your keys during recovery.</li>
+                <li>To retrieve your original data later, you will simply upload these exact unaltered <b>.enc</b> files.</li>
+            </ol>
+        </div>
+
+        <h2>Select Files to Encrypt</h2>
+
+        <form id="encryptForm">
+            <label for="fileInput">Choose files from your device:</label>
+            <input type="file" id="fileInput" name="uploadedFile" multiple required>
+            
+            <div id="display"></div>
+            
+            <div class="button">
+               <button id="edit" type="button">Edit changes</button>
+               <button id="save" type="button">Save changes</button>
+            </div>
+
+            <div><button type="submit" id="submit">Encrypt & Generate Vault</button></div>
+        </form>
+    </section>
+    
+    <script src="/static/upload.js"></script>
+
+    <script>
+        document.getElementById('encryptForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Stop normal form submission
+            
+            let btn = document.getElementById('submit');
+            btn.innerText = "Processing... Please wait!";
+            btn.disabled = true; // Prevent double-clicking
+            btn.style.opacity = "0.7";
+
+            let formData = new FormData(this);
+
+            try {
+                // Send the request in the background
+                let response = await fetch('/encrypt', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // 1. Get the ZIP file from the response
+                    let blob = await response.blob();
+                    
+                    // 2. Create a temporary download link and click it via JS
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'SecureVault_Encrypted.zip';
+                    document.body.appendChild(a);
+                    a.click(); // Trigger the download!
+                    
+                    // 3. Clean up the link
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+
+                    // 4. Redirect immediately after the download triggers!
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 500); 
+                } else {
+                    let errorText = await response.text();
+                    alert("Error: " + errorText);
+                    btn.innerText = "Encrypt & Generate Vault";
+                    btn.disabled = false;
+                    btn.style.opacity = "1";
+                }
+            } catch (error) {
+                console.error("Upload failed:", error);
+                alert("Something went wrong with the connection!");
+                btn.innerText = "Encrypt & Generate Vault";
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            }
+        });
+    </script>
+</body>
+</html>

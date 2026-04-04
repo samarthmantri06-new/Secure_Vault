@@ -1,0 +1,153 @@
+/* RESET & FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+/* Monospace font for the ID number */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: white;
+}
+
+/* BACKGROUND ANIMATION */
+body::before, body::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(80px);
+    opacity: 0.6;
+}
+body::before { background: #00d2ff; top: 5%; left: 10%; animation: float 6s ease-in-out infinite; }
+body::after { background: #3a7bd5; bottom: 5%; right: 10%; animation: float 8s ease-in-out infinite reverse; }
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, 40px); }
+}
+
+/* MAIN CARD */
+.glass-container {
+    width: 100%;
+    max-width: 450px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+/* HEADER SECTION */
+.profile-pic {
+    width: 90px;
+    height: 90px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #00d2ff;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    color: #00d2ff;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+}
+
+h1 { font-size: 1.8rem; margin-bottom: 2px; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+.status-text { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 25px; text-transform: uppercase; }
+
+/* INFO SECTION */
+.info-section {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column; /* Stack label and value */
+    align-items: center;
+    gap: 5px;
+}
+.label { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+.value { font-size: 1.1rem; font-weight: 500; color: white; }
+
+/* UNIQUE ID BADGE (The Green Number Box) */
+.id-card {
+    background: rgba(0, 255, 170, 0.1); /* Slight green tint */
+    border: 1px dashed #00ffaa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.id-label {
+    color: #00ffaa;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.id-number {
+    font-family: 'Roboto Mono', monospace; /* Monospace for numbers looks technical */
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+}
+
+/* BUTTONS */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.9rem;
+}
+
+.btn-edit {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-edit:hover { background: rgba(255, 255, 255, 0.2); }
+
+.btn-logout {
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 75, 43, 0.3);
+}
+.btn-logout:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(255, 75, 43, 0.5); }
+
+.back-link {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.3s;
+}
+.back-link:hover { color: #00d2ff; }

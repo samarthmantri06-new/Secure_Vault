@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault | Create Account</title>
+    <link rel="stylesheet" href="/static/css2.css">
+    <style>
+        .validation-msg { font-size: 0.85rem; margin-top: 5px; display: block; }
+        .invalid { color: #ff4c4c; font-weight: bold; }
+        .valid { color: #2ecc71; font-weight: bold; }
+        /* Style for the new suffix hint */
+        .suffix-hint { font-size: 0.8rem; color: #00d2ff; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+
+    <a href="/" style="position: absolute; top: 20px; left: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; text-decoration: none;">
+        &larr; Back to Home
+    </a>
+
+    <header>
+        <h1>Welcome!</h1>
+        <p>Create your secure account</p>
+    </header>
+
+    <main>
+        <form action="/signup" method="POST" id="signupForm">
+            <fieldset>
+                <legend>Registration</legend>
+                
+                <p>
+                    <label for="username">Username:</label>
+                    <span class="suffix-hint">Your ID will end with <b>@securevault</b></span>
+                    <input type="text" name="username" id="username" placeholder="e.g. sam" required>
+                </p>
+                
+                <p>
+                    <label for="new-pass">Master Password:</label>
+                    <input type="password" name="password" id="new-pass" placeholder="Create Password" required>
+                    <span id="pass-feedback" class="validation-msg invalid">Requires: 8+ chars, Capital, Number & Symbol</span>
+                </p>
+                
+                <p>
+                    <label for="confirm-pass">Confirm Password:</label>
+                    <input type="password" name="ConfirmPassword" id="confirm-pass" placeholder="Retype Password" required>
+                    <span id="match-feedback" class="validation-msg"></span>
+                </p>
+                
+                <button type="submit" id="submitBtn">Initialize Account</button>
+                <p style="margin-top: 15px;">Already have a vault? <a href="/login">Login</a></p>
+            </fieldset>
+        </form> 
+    </main>
+
+    <script>
+        const passInput = document.getElementById('new-pass');
+        const confirmInput = document.getElementById('confirm-pass');
+        const passFeedback = document.getElementById('pass-feedback');
+        const matchFeedback = document.getElementById('match-feedback');
+
+        function checkSecurity() {
+            const val = passInput.value;
+            const hasCap = /[A-Z]/.test(val);
+            const hasNum = /[0-9]/.test(val);
+            const hasSym = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+            const isLong = val.length >= 8;
+
+            if (hasCap && hasNum && hasSym && isLong) {
+                passFeedback.textContent = "✔ Strong Password";
+                passFeedback.className = "validation-msg valid";
+            } else {
+                passFeedback.textContent = "Weak: Need 8+ chars, Capital, Number, and Symbol";
+                passFeedback.className = "validation-msg invalid";
+            }
+
+            if (confirmInput.value !== "") {
+                if (confirmInput.value === val) {
+                    matchFeedback.textContent = "✔ Passwords match";
+                    matchFeedback.className = "validation-msg valid";
+                } else {
+                    matchFeedback.textContent = "✖ Passwords do not match";
+                    matchFeedback.className = "validation-msg invalid";
+                }
+            }
+        }
+
+        passInput.addEventListener('input', checkSecurity);
+        confirmInput.addEventListener('input', checkSecurity);
+    </script>
+</body>
+</html>

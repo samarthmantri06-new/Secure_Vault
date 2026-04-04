@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault | Data Privacy</title>
+    <link rel="stylesheet" href="/static/css3.css">
+</head>
+<body>
+
+    <nav>
+        <section class="logo">SecureVault</section>
+        
+        <section class="nav-links">
+            <a href="/encrypt.html" class="menu-btn">Encrypt Files</a>
+            <a href="/decrypt.html" class="menu-btn">Decrypt Files</a>
+
+            {% if 'username' in session %}
+                <a href="/profile.html" class="menu-btn">My Profile</a>
+                <a href="/history.html" class="menu-btn">History</a>
+                <a href="/logout" class="menu-btn" ">Logout</a>
+            
+            {% else %}
+                <a href="/login" class="menu-btn"">Login / Sign Up</a>
+            {% endif %}
+        </section>
+    </nav>
+
+    <header class="hero-section">
+        <h1>Zero Knowledge.<br>Absolute Sovereignty.</h1>
+        <p>
+            Welcome to the future of data privacy. We utilize a proprietary blend 
+            of <strong>military-grade cryptography</strong> and <strong>decentralized architecture</strong> 
+            to secure your most sensitive digital assets. 
+            <br><br>
+            We don't hold your data hostage. You keep the locked vault, and our system ensures 
+            that only you have the power to open it. True privacy, uncompromising security.
+        </p>
+    </header>
+
+    <section id="about" class="info-section">
+        <h2>The Architecture of Security</h2>
+        
+        <section class="feature-container">
+            <section class="feature-box">
+                <h3>1. Complete Data Ownership</h3>
+                <p>
+                    Once secured, your encrypted vault is stored directly on your device—not in our cloud. 
+                    Because we never hold your stored files, a server breach cannot compromise your data.
+                </p>
+            </section>
+
+            <section class="feature-box">
+                <h3>2. Distributed Key Architecture</h3>
+                <p>
+                    We eliminate the risk of stolen passwords. Your unique access credentials are mathematically 
+                    fragmented and distributed across a secure, invisible network, making them impossible to intercept.
+                </p>
+            </section>
+
+            <section class="feature-box">
+                <h3>3. Zero-Knowledge Proofs</h3>
+                <p>
+                    Our recovery protocol is entirely blind. When you retrieve your files, our system mathematically 
+                    verifies your identity and unlocks your vault without our servers ever seeing the contents inside.
+                </p>
+            </section>
+        </section>
+    </section>
+
+    <section class="action-section">
+        <h2>Secure Your Data Now</h2>
+        <p>Lock your files or recover an existing vault.</p>
+        
+        <section class="cta-container">
+            <a href="encrypt.html" class="btn-primary">Get Started (Encrypt)</a>
+            <a href="decrypt.html" class="btn-secondary">Retrieve Data</a>
+        </section>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 SecureVault Project. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
