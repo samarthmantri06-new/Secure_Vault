@@ -1,55 +1,49 @@
-# SecureVault — Zero‑Knowledge Style File Vault
+#  SecureVault — Zero-Knowledge File Vault
 
-SecureVault is a Flask-based web application for encrypting files and enabling recovery using a **split‑key, threshold reconstruction** approach. The system is designed so **no single storage location** is enough to recover the master key.
+> A secure, Flask-based file storage system utilizing a threshold-based key reconstruction model to eliminate single points of failure. 
 
-**Live deployment:** `https://pirateee.pythonanywhere.com/`
-
----
-
-## Key Features
-
-- **AES‑256‑GCM encryption** for confidentiality + integrity
-- **5 key shards** generated with a **3‑of‑5 reconstruction threshold**
-- Shards are embedded into PNG **carrier images** (steganography layer)
-- Carriers are distributed across isolated storage “nodes” (**NODE‑A / NODE‑B / NODE‑C** in UI)
-- **Ownership enforcement on decrypt**
-  - Server rejects vault artifacts that do not belong to the logged‑in user
-  - Server additionally checks vault ownership in the DB before attempting recovery
+SecureVault ensures that no single component or storage location is sufficient to recover encrypted data. By combining advanced encryption, key fragmentation, steganography, and distributed storage, access to encrypted files is physically impossible without combining multiple independent components.
 
 ---
 
-## How It Works (High Level)
+##  Key Features
 
-1. **Encrypt**: Your file is encrypted with AES‑256‑GCM.
-2. **Split**: The encryption key is split into 5 shards (threshold 3).
-3. **Encode**: Shards are embedded into PNG carriers.
-4. **Disperse**: Carriers are distributed across isolated nodes.
-5. **Decrypt**: Upload the original `.enc` artifact(s); the server verifies ownership, reconstructs the key (3 shards), then decrypts in memory.
-
----
-
-## Tech Stack
-
-- **Backend:** Flask (Python)
-- **Crypto:** `cryptography` (AESGCM)
-- **Storage Nodes:** modular upload/download helpers (node abstraction in UI)
-- **Frontend:** HTML templates + JS + cyberpunk UI theme
+* **AES-256-GCM Encryption:** Ensures both absolute confidentiality and integrity of your stored files.
+* **Threshold Key Splitting (3-of-5):** The master encryption key is cryptographically divided into 5 separate shards. A minimum of exactly 3 shards is required for successful reconstruction.
+* **Steganographic Embedding:** Adds a powerful layer of obfuscation by hiding the key shards inside standard PNG image carriers.
+* **Distributed Storage Abstraction:** Shards are dispersed across isolated, logical storage nodes (`NODE-A`, `NODE-B`, `NODE-C`) to prevent localized compromise.
+* **Ownership Validation:** Decryption is strictly restricted to the original user through enforced server-side ownership checks.
 
 ---
 
-## Local Setup
+##  System Workflow
 
-### Requirements
-- Python **3.10+**
-- 5+ PNG images in `photos/` (used as shard carriers)
+###  Encryption Phase
+1. The target file is encrypted using **AES-256-GCM**.
+2. The encryption key is split into **5 distinct shards**.
+3. These shards are individually embedded into **PNG carriers**.
+4. The carriers are distributed across isolated **logical nodes**.
 
-### Install
+###  Decryption Phase
+1. The user submits the encrypted artifact(s).
+2. The server successfully verifies **user ownership**.
+3. A minimum of **3 shards** are extracted from the retrieved PNG carriers.
+4. The encryption key is successfully **reconstructed in memory**.
+5. The file is securely decrypted and delivered to the user.
 
-```bash
-python -m venv .venv
-# Windows:
-.\.venv\Scripts\activate
-# macOS/Linux:
-# source .venv/bin/activate
+---
 
-pip install -r requirements.txt
+##  Design Philosophy
+
+SecureVault is built around a zero-trust, defense-in-depth architecture:
+* **Elimination of Single-Point Key Exposure:** The complete key never rests in a single location.
+* **Layered Security:** Combines robust mathematical encryption with physical fragmentation and visual obfuscation.
+* **Controlled Access:** Cryptographic security backed by strict ownership enforcement.
+
+---
+
+##  Tech Stack
+
+* **Backend:** Flask (Python)
+* **Cryptography:** `cryptography` library (AES-GCM)
+* **Frontend:** HTML, CSS, JavaScript
