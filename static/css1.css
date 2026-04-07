@@ -1,200 +1,385 @@
-/* 1. ADVANCED RESET & FONTS */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif; /* Modern, clean font */
+:root {
+  --bg0: #0b0b0e;
+  --bg1: #121216;
+  --text: #fff;
+  --sub: rgba(255, 255, 255, 0.6);
+  --line: rgba(255, 255, 255, 0.08);
+  --card: rgba(20, 20, 25, 0.46);
+  --f8: 8px; --f13: 13px; --f21: 21px; --f34: 34px;
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    /* distinct deep gradient */
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* Prevents scrollbars if animations go wide */
-    position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--f34) var(--f13);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 46, 91, 0.15), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(59, 10, 130, 0.15), transparent 40%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  position: relative;
 }
 
-/* 2. BACKGROUND ANIMATED BLOBS (Visual Flair) */
-/* We use pseudo-elements to create glowing orbs behind the glass */
-body::before, body::after {
-    content: '';
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    z-index: -1; /* Behind the form */
-    filter: blur(80px); /* The "Glow" effect */
-    opacity: 0.6;
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
 }
 
 body::before {
-    background: #00d2ff; /* Cyan glow */
-    top: 10%;
-    left: 20%;
-    animation: float 6s ease-in-out infinite;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
+/* AES lock + pixel bitmap schematic ghost layer */
 body::after {
-    background: #3a7bd5; /* Deep blue glow */
-    bottom: 10%;
-    right: 20%;
-    animation: float 8s ease-in-out infinite reverse;
+  opacity: 0.1;
+  background:
+    linear-gradient(90deg, transparent 0 16%, rgba(255,255,255,0.5) 16% 16.2%, transparent 16.2% 100%),
+    repeating-linear-gradient(90deg, transparent 0 20px, rgba(255,255,255,0.45) 20px 21px, transparent 21px 40px),
+    repeating-linear-gradient(0deg, transparent 0 20px, rgba(255,255,255,0.35) 20px 21px, transparent 21px 40px),
+    radial-gradient(52px 12px at 82% 20%, rgba(255,255,255,0.4), transparent 70%);
 }
 
-@keyframes float {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(20px, 40px); }
-}
-
-/* 3. HEADER STYLING */
-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    z-index: 10;
-}
+header, main { width: min(520px, 95vw); position: relative; z-index: 1; }
+header { margin-bottom: var(--f13); }
 
 header h1 {
-    font-size: 3rem;
-    color: white;
-    text-shadow: 0 0 10px rgba(0, 210, 255, 0.7); /* Neon glow text */
-    letter-spacing: 2px;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  font-size: clamp(2rem, 4.3vw, 2.8rem);
 }
 
-header p {
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 300;
-}
+header p { margin-top: var(--f8); color: var(--sub); font-size: var(--f13); line-height: 1.6; font-weight: 300; }
 
-hr { display: none; }
-
-/* 4. THE GLASS CARD */
 main {
-    width: 100%;
-    max-width: 420px;
-    background: rgba(255, 255, 255, 0.1); /* See-through white */
-    backdrop-filter: blur(15px); /* Frosted glass effect */
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); /* Deep shadow */
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 var(--f21) 58px rgba(0, 0, 0, 0.6);
+  padding: var(--f21);
 }
 
-/* 5. FORM INTERNALS */
-fieldset {
-    border: none;
-    padding: 0;
-}
-
+fieldset { border: 0; }
 legend {
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-    padding-bottom: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: var(--f13);
+  margin-bottom: var(--f13);
 }
 
-/* 6. FLOATING INPUT STYLES */
-fieldset p {
-    position: relative; /* Needed for absolute label positioning */
-    margin-bottom: 2rem;
-}
-
-/* Hide the default label text visually, we will use placeholder magic or specific positioning */
-/* For this advanced design, let's style the INPUT to be the star */
-
-label {
-    display: block;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
+fieldset p { margin-bottom: var(--f13); }
+label { display: block; margin-bottom: var(--f8); color: var(--sub); font-size: var(--f13); }
 
 input {
-    width: 100%;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 30px; /* Pill shape */
-    color: white;
-    font-size: 1rem;
-    outline: none;
-    transition: 0.3s;
-}
-
-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  padding: var(--f13);
+  border: 1px solid var(--line);
+  border-radius: var(--f8);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: var(--f13);
+  outline: none;
 }
 
 input:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: #00d2ff;
-    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+  border-color: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 var(--f8) rgba(255,255,255,0.04);
 }
 
-/* 7. NEON BUTTON */
 button {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-    border: none;
-    border-radius: 30px;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-top: 10px;
+  width: 100%;
+  border: 0;
+  border-radius: 50px;
+  padding: var(--f13) var(--f21);
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+button:hover { filter: brightness(0.96); }
+
+.auth-error {
+  margin-bottom: var(--f13);
+  padding: var(--f13);
+  border-radius: var(--f8);
+  border: 1px solid rgba(192, 57, 43, 0.45);
+  background: rgba(192, 57, 43, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+a { color: #fff; font-size: 12px; }
+a:hover { color: rgba(255,255,255,0.8); }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400&display=swap');
+
+:root {
+  --bg0: #0b0b0e;
+  --bg1: #121216;
+  --text: #fff;
+  --sub: rgba(255, 255, 255, 0.6);
+  --line: rgba(255, 255, 255, 0.08);
+  --card: rgba(20, 20, 25, 0.46);
+  --f8: 8px; --f13: 13px; --f21: 21px; --f34: 34px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--f34) var(--f13);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 46, 91, 0.15), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(59, 10, 130, 0.15), transparent 40%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  position: relative;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+body::before {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+body::after {
+  opacity: 0.16;
+  background:
+    radial-gradient(circle at 14% 20%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+    repeating-linear-gradient(90deg, transparent 0 24px, rgba(255,255,255,0.06) 24px 25px, transparent 25px 48px);
+}
+
+header, main { width: min(500px, 94vw); }
+header { margin-bottom: var(--f13); }
+
+header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  font-size: clamp(2rem, 4.3vw, 2.8rem);
+}
+
+header p { margin-top: var(--f8); color: var(--sub); font-size: var(--f13); line-height: 1.6; }
+
+main {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 var(--f21) 58px rgba(0, 0, 0, 0.6);
+  padding: var(--f21);
+}
+
+fieldset { border: 0; }
+legend {
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: var(--f13);
+  margin-bottom: var(--f13);
+}
+
+fieldset p { margin-bottom: var(--f13); }
+label { display: block; margin-bottom: var(--f8); color: var(--sub); font-size: var(--f13); }
+
+input {
+  width: 100%;
+  padding: var(--f13);
+  border: 1px solid var(--line);
+  border-radius: var(--f8);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: var(--f13);
+  outline: none;
+}
+
+input:focus {
+  border-color: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 var(--f8) rgba(255,255,255,0.04);
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 50px;
+  padding: var(--f13) var(--f21);
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+a { color: #fff; font-size: 12px; }
+a:hover { color: rgba(255,255,255,0.8); }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+  --bg-0: #0b0b0e;
+  --bg-1: #121216;
+  --text: #ffffff;
+  --subtext: rgba(255, 255, 255, 0.6);
+  --line: rgba(255, 255, 255, 0.08);
+  --card: rgba(20, 20, 25, 0.46);
+  --g-red: #ff2e5b;
+  --g-violet: #3b0a82;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px 16px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  background:
+    radial-gradient(980px 620px at 22% 16%, rgba(255, 46, 91, 0.36), transparent 60%),
+    radial-gradient(980px 680px at 78% 80%, rgba(59, 10, 130, 0.44), transparent 64%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.3;
+}
+
+header, main { width: min(480px, 94vw); position: relative; z-index: 1; }
+
+header { margin-bottom: 14px; }
+
+header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: clamp(2rem, 4.4vw, 2.8rem);
+  line-height: 1.1;
+  letter-spacing: 1px;
+}
+
+header p { margin-top: 8px; color: var(--subtext); font-size: 12px; }
+
+main {
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.62);
+  padding: 26px 22px;
+  position: relative;
+}
+
+main::after {
+  content: "AUTH NODE";
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+fieldset { border: 0; }
+
+legend {
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+fieldset p { margin-bottom: 12px; }
+
+label { display: block; margin-bottom: 6px; color: var(--subtext); font-size: 12px; }
+
+input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.36);
+  color: var(--text);
+  padding: 12px;
+  font-size: 13px;
+  outline: none;
+}
+
+input:focus {
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 50px;
+  padding: 12px 16px;
+  cursor: pointer;
+  background: #fff;
+  
+  color: #000;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 20px rgba(0, 210, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
 }
 
-button:active {
-    transform: scale(0.98);
-}
-
-/* 8. FOOTER LINKS */
-fieldset p:last-child {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: white;
-    margin-bottom: 0;
-}
-
-a {
-    color: #00d2ff;
-    text-decoration: none;
-    font-weight: bold;
-    position: relative;
-}
-
-/* Link Underline Animation */
-a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -2px;
-    left: 0;
-    background-color: #00d2ff;
-    transition: width 0.3s;
-}
-
-a:hover::after {
-    width: 100%;
-}
+a { color: #fff; font-size: 12px; }
+a:hover { color: rgba(255, 255, 255, 0.78); }

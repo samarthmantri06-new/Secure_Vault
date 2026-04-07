@@ -33,9 +33,10 @@ def upload_to_drive(file_path, folder_id):
     except Exception as e:
         print(f"Cloud Upload Failed: {e}")
         
-def download_vault_from_drive(vault_id, folder_id, download_dir):
+def download_vault_from_drive(username, vault_id, folder_id, download_dir):
     service = authenticate_gdrive()
-    query = f"'{folder_id}' in parents and name contains 'v_{vault_id}_' and trashed=false"
+    # Only pull carrier images for this user+vault
+    query = f"'{folder_id}' in parents and name contains '{username}_{vault_id}_' and trashed=false"
     results = service.files().list(q=query, fields="files(id, name)").execute()
     items = results.get('files', [])
     

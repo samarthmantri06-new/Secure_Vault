@@ -1,17 +1,52 @@
-# Sensitive Credentials
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# ---- Virtualenv ----
+.venv/
+venv/
+ENV/
+env/
+
+# ---- OS / IDE ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ---- Flask ----
+instance/
+.flaskenv
+
+# ---- Secrets / credentials (DO NOT COMMIT) ----
+.env
+*.pem
+*.key
 client_secret.json
 token.json
+dropbox_secrets.json
+
+# ---- Local database ----
 database.db
+*.db-journal
+*.db-wal
+*.db-shm
 
-# Large Folders
-photos/
-__pycache__/
-.venv/
-
-# Storage & Temp Folders
+# ---- Generated vault artifacts / local storage ----
 storage_1/
 storage_2/
 storage_3/
 temp_uploads/
 encrypted_output/
 restored_files/
+
+# ---- Media / carriers ----
+photos/
+
+# ---- Misc ----
+dropbox_test.txt
+

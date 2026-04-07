@@ -6,33 +6,57 @@
     <title>SecureVault | Restore Vault</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css4.css">
+    <link rel="stylesheet" href="/static/vault-effects.css">
 </head>
-<body>
+<body class="page-decrypt">
 
-    <a href="/" style="position: absolute; top: 20px; left: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; z-index: 100; text-decoration: none;">
-        &larr; Back to Dashboard
-    </a>
+    <a href="/" class="back-dash">&larr; Back to Dashboard</a>
 
     <section id="upload-section">
         <h1>Unlock Your Vault</h1>
-        <p class="subtitle">Upload your unchanged .enc files to reassemble your data.</p>
+        <p class="subtitle">Reconstruction mode — shards rejoin in memory only.</p>
 
-        <div class="instruction-panel">
-            <p class="instruction-title">Security Check</p>
+        <div class="instruction-panel briefing-doc">
+            <span class="briefing-stamp">SECURITY PROTOCOL</span>
+            <p class="instruction-title">Pre-flight checks</p>
             <ol>
-                <li>Select the exact <b>.enc files</b> you downloaded previously.</li>
-                <li>Our system will read the Vault ID from the filename.</li>
-                <li>We will retrieve your hidden key shards from the cloud and decrypt the file in memory.</li>
+                <li>Select the original <b>.enc</b> vault files (unchanged names).</li>
+                <li>Ownership and integrity are verified server-side during retrieval.</li>
+                <li>Shards are pulled from carriers, the key is reassembled at threshold 3/5, then decrypt runs in memory.</li>
             </ol>
+            <p class="cloud-note">Recovery uses segmented carriers across isolated nodes. Any 3 valid shards reconstruct the master key.</p>
         </div>
 
+        <h2>Vault intake scanner</h2>
+
         <form id="decryptForm">
-            <label for="fileInput">Secure Encrypted Files (.enc):</label>
-            
-            <input type="file" id="fileInput" name="encrypted_file" accept=".enc" multiple required>
-            
-            <div id="display"></div>
-            
+            <label for="fileInput">Encrypted vault files (.enc):</label>
+            <div class="scanner-panel">
+                <div class="scanner-sweep" aria-hidden="true"></div>
+                <div class="drop-zone-wrap">
+                    <input type="file" id="fileInput" name="encrypted_file" accept=".enc" multiple required>
+                    <label for="fileInput" class="drop-zone drop-zone--scanner">
+                        <span>Initialize biometric handoff — drop .enc payloads</span>
+                        <small>Only unmodified SecureVault .enc artifacts.</small>
+                    </label>
+                </div>
+            </div>
+
+            <div id="vault-intake-meta" class="vault-intake-meta" aria-live="polite"></div>
+
+            <div id="shard-assembly" class="shard-assembly" aria-hidden="true">
+                <div class="shard shard--1"></div>
+                <div class="shard shard--2"></div>
+                <div class="shard shard--3"></div>
+                <div class="shard shard--4"></div>
+                <div class="shard shard--5"></div>
+                <div class="shard-key-icon"><i class="fa-solid fa-key"></i></div>
+            </div>
+
+            <div class="stage-line" id="stage-line" aria-live="polite">STAGE: IDLE</div>
+
+            <div id="display" class="file-panel"></div>
+
             <div class="button">
                <button id="edit" type="button">Edit changes</button>
                <button id="save" type="button">Save changes</button>
@@ -40,63 +64,15 @@
 
             <div><button type="submit" id="submit">Retrieve</button></div>
         </form>
+
+        <div id="vault-opened-banner" class="vault-opened-banner" style="display:none">
+            <strong>Vault opened</strong>
+            <p>Session secure — no plaintext retained on server. Download started.</p>
+        </div>
     </section>
 
+    <script src="/static/vault-global.js"></script>
     <script src="/static/upload.js"></script>
-
-    <script>
-        document.getElementById('decryptForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Stop normal form submission
-            
-            let btn = document.getElementById('submit');
-            btn.innerText = "Retrieving keys... Please wait!";
-            btn.disabled = true; // Prevent double-clicking
-            btn.style.opacity = "0.7";
-
-            let formData = new FormData(this);
-
-            try {
-                // Send the request in the background
-                let response = await fetch('/decrypt', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    // 1. Get the ZIP file from the response
-                    let blob = await response.blob();
-                    
-                    // 2. Create a temporary download link and click it via JS
-                    let url = window.URL.createObjectURL(blob);
-                    let a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'SecureVault_Restored.zip';
-                    document.body.appendChild(a);
-                    a.click(); // Trigger the download!
-                    
-                    // 3. Clean up the link
-                    a.remove();
-                    window.URL.revokeObjectURL(url);
-
-                    // 4. Redirect immediately after the download triggers!
-                    setTimeout(() => {
-                        window.location.href = "/";
-                    }, 500); 
-                } else {
-                    let errorText = await response.text();
-                    alert("Error: " + errorText);
-                    btn.innerText = "Retrieve";
-                    btn.disabled = false;
-                    btn.style.opacity = "1";
-                }
-            } catch (error) {
-                console.error("Upload failed:", error);
-                alert("Something went wrong with the connection!");
-                btn.innerText = "Retrieve";
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            }
-        });
-    </script>
+    <script src="/static/decrypt-flow.js"></script>
 </body>
 </html>

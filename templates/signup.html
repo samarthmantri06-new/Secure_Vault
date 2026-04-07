@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureVault | Create Account</title>
     <link rel="stylesheet" href="/static/css2.css">
+    <link rel="stylesheet" href="/static/vault-effects.css">
     <style>
         .validation-msg { font-size: 0.85rem; margin-top: 5px; display: block; }
         .invalid { color: #ff4c4c; font-weight: bold; }
@@ -28,11 +29,15 @@
         <form action="/signup" method="POST" id="signupForm">
             <fieldset>
                 <legend>Registration</legend>
+
+                {% if error %}
+                <div class="auth-error" role="alert">{{ error }}</div>
+                {% endif %}
                 
                 <p>
                     <label for="username">Username:</label>
                     <span class="suffix-hint">Your ID will end with <b>@securevault</b></span>
-                    <input type="text" name="username" id="username" placeholder="e.g. sam" required>
+                    <input type="text" name="username" id="username" placeholder="e.g. sam" value="{{ username or '' }}" required>
                 </p>
                 
                 <p>
@@ -88,5 +93,6 @@
         passInput.addEventListener('input', checkSecurity);
         confirmInput.addEventListener('input', checkSecurity);
     </script>
+    <script src="/static/vault-global.js"></script>
 </body>
 </html>

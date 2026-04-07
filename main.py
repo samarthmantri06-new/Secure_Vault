@@ -59,28 +59,28 @@ def run_vault():
         # --- DISTRIBUTION LOGIC ---
         print("Distributing Keys")
         
-        # Node 1: Google Drive (Keys 1 & 2)
+        # Node 1 (Carrier A) (Keys 1 & 2)
         for i in range(0, 2):
-            fname = f"v_{vault_id}_k{i+1}.png"
+            fname = f"{username}_{vault_id}_k{i+1}.png"
             path = os.path.join(S1, fname)
             encode_image(photos[i], shares[i], path)
             upload_to_drive(path, DRIVE_FOLDER_ID)
             os.remove(path)
-            print(f"GDrive: {fname}")
+            print(f"Carrier A: {fname}")
 
-        # Node 2: Dropbox (Keys 3 & 4)
+        # Node 2 (Carrier B) (Keys 3 & 4)
         for i in range(2, 4):
-            fname = f"v_{vault_id}_k{i+1}.png"
+            fname = f"{username}_{vault_id}_k{i+1}.png"
             path = os.path.join(S2, fname)
             encode_image(photos[i], shares[i], path)
             upload_to_dropbox(path)
             os.remove(path)
-            print(f"Dropbox: {fname}")
+            print(f"Carrier B: {fname}")
             
-        # Node 3: Local S3 (Key 5)
-        fname = f"v_{vault_id}_k5.png"
+        # Node 3 (Carrier C) (Key 5)
+        fname = f"{username}_{vault_id}_k5.png"
         encode_image(photos[4], shares[4], os.path.join(S3, fname))
-        print(f"Local S3: {fname}")
+        print(f"Carrier C: {fname}")
 
     print("\nProcess Complete.")
 

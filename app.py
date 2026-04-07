@@ -77,11 +77,11 @@ def signup():
         confirm_password = request.form.get('ConfirmPassword')
 
         if password != confirm_password:
-            return "Passwords do not match!", 400
+            return render_template('signup.html', error="Passwords do not match!", username=raw_user), 400
         if not is_valid_username(raw_user):
-            return "Username can only contain letters, numbers, and underscores (_).", 400
+            return render_template('signup.html', error="Username can only contain letters, numbers, and underscores (_).", username=raw_user), 400
         if not is_valid_password(password):
-            return "Password must be 8+ chars with a Capital, Number, and Special Symbol.", 400
+            return render_template('signup.html', error="Password must be 8+ chars with a Capital, Number, and Special Symbol.", username=raw_user), 400
 
         full_username = f"{raw_user}@securevault"
         hashed_pw = generate_password_hash(password)
@@ -94,7 +94,11 @@ def signup():
             conn.close()
             return redirect(url_for('login'))
         except sqlite3.IntegrityError:
-            return f"The username '{full_username}' is already taken.", 400
+            return render_template(
+                'signup.html',
+                error=f"The username '{full_username}' is already taken.",
+                username=raw_user,
+            ), 400
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -116,7 +120,7 @@ def login():
             session['username'] = full_username
             return redirect(url_for('home'))
         else:
-            return "Invalid username or password!", 401
+            return render_template('login.html', error="Invalid username or password!", username=raw_user), 401
     return render_template('login.html')
 
 @app.route('/logout')
@@ -127,6 +131,10 @@ def logout():
 # --- BASIC WEB ROUTES ---
 @app.route('/')
 def home(): 
+    return render_template('index.html')
+
+@app.route('/index.html')
+def home_alias():
     return render_template('index.html')
 
 @app.route('/encrypt.html')
@@ -149,8 +157,19 @@ def profile():
     enc_count = c.fetchone()[0]
     c.execute("SELECT COUNT(*) FROM history WHERE username = ? AND action = 'Decrypt'", (username,))
     dec_count = c.fetchone()[0]
+    c.execute(
+        "SELECT action, filename, vault_id, timestamp FROM history WHERE username = ? ORDER BY timestamp DESC LIMIT 14",
+        (username,),
+    )
+    recent_history = c.fetchall()
     conn.close()
-    return render_template('profile.html', username=username, enc_count=enc_count, dec_count=dec_count)
+    return render_template(
+        'profile.html',
+        username=username,
+        enc_count=enc_count,
+        dec_count=dec_count,
+        recent_history=recent_history,
+    )
 
 @app.route('/history.html')
 def history(): 
@@ -184,7 +203,7 @@ def handle_encrypt():
             master_key = AESGCM.generate_key(bit_length=256)
             base_name = os.path.splitext(original_name)[0]
             
-            # Use the username with suffix in the filename
+            # Encrypted artifact naming stays ownership-bound: vaultid_username_filename.enc
             enc_filename = f"{vault_id}_{username}_{base_name}.enc"
             
             payload = original_name.encode('utf-8') + b'|:VAULT:|' + file_data
@@ -194,19 +213,20 @@ def handle_encrypt():
             shares = split_secret(master_key, threshold=3, total=5)
             photos = random.sample(available_photos, 5)
 
+            # Carrier images are stored as username_vaultid_key.png (no generic v_ prefix)
             for i in range(0, 2):
-                path = os.path.join(S1, f"v_{vault_id}_k{i+1}.png")
+                path = os.path.join(S1, f"{username}_{vault_id}_k{i+1}.png")
                 encode_image(photos[i], shares[i], path)
                 upload_to_drive(path, DRIVE_FOLDER_ID)
                 os.remove(path)
                 
             for i in range(2, 4):
-                path = os.path.join(S2, f"v_{vault_id}_k{i+1}.png")
+                path = os.path.join(S2, f"{username}_{vault_id}_k{i+1}.png")
                 encode_image(photos[i], shares[i], path)
                 upload_to_dropbox(path)
                 os.remove(path)
                 
-            encode_image(photos[4], shares[4], os.path.join(S3, f"v_{vault_id}_k5.png"))
+            encode_image(photos[4], shares[4], os.path.join(S3, f"{username}_{vault_id}_k5.png"))
 
             conn = sqlite3.connect('database.db')
             c = conn.cursor()
@@ -237,27 +257,44 @@ def handle_decrypt():
             if not enc_filename.endswith('.enc'): continue 
             
             try:
-                # Splitting updated to handle the username@securevault format correctly
                 parts = enc_filename.replace(".enc", "").split("_")
-                if len(parts) < 3: continue
+                if len(parts) < 3:
+                    return "Invalid vault artifact filename.", 400
                 vault_id = parts[0]
-                file_owner = parts[1] 
+                file_owner = parts[1]
 
-                if file_owner != current_user: continue 
+                # Ownership enforcement: fail loudly if a different user tries retrieval
+                if file_owner != current_user:
+                    return "Unauthorized vault artifact for this session.", 403
+
+                # Stronger ownership check: vault_id must belong to this user in DB (Encrypt record)
+                conn = sqlite3.connect('database.db')
+                c = conn.cursor()
+                c.execute(
+                    "SELECT 1 FROM history WHERE username = ? AND vault_id = ? AND action = 'Encrypt' LIMIT 1",
+                    (current_user, vault_id),
+                )
+                owned = c.fetchone() is not None
+                conn.close()
+                if not owned:
+                    return "Unauthorized vault artifact for this session.", 403
 
                 images = []
-                for folder in [S1, S2, S3]: images.extend(glob.glob(os.path.join(folder, f"v_{vault_id}_k*.png")))
+                for folder in [S1, S2, S3]:
+                    images.extend(glob.glob(os.path.join(folder, f"{file_owner}_{vault_id}_k*.png")))
                 
                 if len(images) < 3:
-                    try: download_vault_from_drive(vault_id, DRIVE_FOLDER_ID, S1)
-                    except TypeError: download_vault_from_drive(file_owner, vault_id, DRIVE_FOLDER_ID, S1)
+                    download_vault_from_drive(file_owner, vault_id, DRIVE_FOLDER_ID, S1)
                     images = [] 
-                    for folder in [S1, S2, S3]: images.extend(glob.glob(os.path.join(folder, f"v_{vault_id}_k*.png")))
+                    for folder in [S1, S2, S3]:
+                        images.extend(glob.glob(os.path.join(folder, f"{file_owner}_{vault_id}_k*.png")))
 
                 if len(images) < 3:
-                    for k_num in ["k3", "k4"]: download_from_dropbox(f"v_{vault_id}_{k_num}.png", S2)
+                    for k_num in ["k3", "k4"]:
+                        download_from_dropbox(f"{file_owner}_{vault_id}_{k_num}.png", S2)
                     images = [] 
-                    for folder in [S1, S2, S3]: images.extend(glob.glob(os.path.join(folder, f"v_{vault_id}_k*.png")))
+                    for folder in [S1, S2, S3]:
+                        images.extend(glob.glob(os.path.join(folder, f"{file_owner}_{vault_id}_k*.png")))
 
                 if len(images) < 3: continue
 

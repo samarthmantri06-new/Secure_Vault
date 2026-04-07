@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureVault | Login</title>
     <link rel="stylesheet" href="/static/css1.css">
+    <link rel="stylesheet" href="/static/vault-effects.css">
 </head>
 <body>
 
@@ -21,10 +22,14 @@
         <form action="/login" method="POST">
             <fieldset>
                 <legend>Secure Login</legend>
+
+                {% if error %}
+                <div class="auth-error" role="alert">{{ error }}</div>
+                {% endif %}
                 
                 <p>
                     <label for="user-identifier">Username:</label>
-                    <input type="text" name="username" id="user-identifier" placeholder="e.g. sam or sam@securevault" required autocomplete="username">
+                    <input type="text" name="username" id="user-identifier" placeholder="e.g. sam or sam@securevault" value="{{ username or '' }}" required autocomplete="username">
                 </p>
                 
                 <p>
@@ -40,6 +45,6 @@
             </fieldset>
         </form>
     </main>
-    
+    <script src="/static/vault-global.js"></script>
 </body>
 </html> 

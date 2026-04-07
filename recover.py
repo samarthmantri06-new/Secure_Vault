@@ -31,25 +31,24 @@ def recover_vault():
             # 1. Gather Local Keys
             images = []
             for folder in [S1, S2, S3]:
-                images.extend(glob.glob(os.path.join(folder, f"v_{vault_id}_k*.png")))
+                images.extend(glob.glob(os.path.join(folder, f"{username}_{vault_id}_k*.png")))
             
             # 2. Try Node 1 (GDrive) if needed
             if len(images) < 3:
                 print(f" Hunting GDrive for Vault {vault_id}...")
-                # PERFECT MATCH: 3 arguments!
-                download_vault_from_drive(vault_id, DRIVE_FOLDER_ID, S1)
+                download_vault_from_drive(username, vault_id, DRIVE_FOLDER_ID, S1)
                 images = [] # Refresh
                 for folder in [S1, S2, S3]:
-                    images.extend(glob.glob(os.path.join(folder, f"v_{vault_id}_k*.png")))
+                    images.extend(glob.glob(os.path.join(folder, f"{username}_{vault_id}_k*.png")))
 
             # 3. Try Node 2 (Dropbox) if still needed
             if len(images) < 3:
                 print(f" Hunting Dropbox for Vault {vault_id}...")
                 for k_num in ["k3", "k4"]:
-                    download_from_dropbox(f"v_{vault_id}_{k_num}.png", S2)
+                    download_from_dropbox(f"{username}_{vault_id}_{k_num}.png", S2)
                 images = [] # Final Refresh
                 for folder in [S1, S2, S3]:
-                    images.extend(glob.glob(os.path.join(folder, f"v_{vault_id}_k*.png")))
+                    images.extend(glob.glob(os.path.join(folder, f"{username}_{vault_id}_k*.png")))
 
             if len(images) < 3:
                 print(f"Failed: Only {len(images)}/3 keys found.")

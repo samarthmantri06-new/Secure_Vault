@@ -3,80 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
+    <title>SecureVault | Classified Dossier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css8.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/vault-effects.css">
 </head>
-<body>
+<body class="page-profile">
+    {% set tot = enc_count + dec_count %}
+    {% set enc_frac = (enc_count / tot) if tot > 0 else 0 %}
+    {% if recent_history %}
+    {% set last_ts = recent_history[0][3] %}
+    {% else %}
+    {% set last_ts = '—' %}
+    {% endif %}
 
-    <section class="glass-container">
-        
-        <div class="profile-header">
-            <div class="profile-pic">
-                <i class="fa-solid fa-user-astronaut"></i>
+    <main class="dossier-shell">
+        <aside class="dossier-sidebar">
+            <div class="folder-tab">CLASSIFIED // SUBJECT</div>
+            <div class="subject-block" aria-label="Subject summary">
+                <div class="subject-line"><span class="k">USER_ID</span><span class="v">{{ username }}</span></div>
+                <div class="subject-line"><span class="k">CLEARANCE</span><span class="v">AUTHORIZED</span></div>
+                <div class="subject-line"><span class="k">STATUS</span><span class="v">ACTIVE</span></div>
             </div>
-            <h1>{{ username }}</h1> 
-            <p class="status-text">Authorized User</p>
-        </div>
-
-        <div class="info-section">
-            <div class="info-row">
-                <span class="label">Username</span>
-                <span class="value">{{ username }}</span>
+            <div class="health-ring-wrap">
+                <div class="health-ring" style="--enc-frac: {{ enc_frac }};">
+                    <div class="health-ring-inner"></div>
+                </div>
+                <div class="health-legend">
+                    <span><i class="dot dot-enc"></i> Encrypt {{ enc_count }}</span>
+                    <span><i class="dot dot-dec"></i> Restore {{ dec_count }}</span>
+                </div>
             </div>
-            <div class="info-row">
-                <span class="label">Files Encrypted</span>
-                <span class="value">{{ enc_count }}</span>
+            <a href="/" class="dossier-back">← Return to command</a>
+        </aside>
+
+        <section class="dossier-main">
+            <header class="dossier-header">
+                <h1>Operator dossier</h1>
+                <p class="dossier-sub">Live terminal feed — clearance verified.</p>
+            </header>
+
+            <div class="terminal-panel">
+                <div class="terminal-bar">
+                    <span class="dot-t"></span><span class="dot-t"></span><span class="dot-t"></span>
+                    SECUREVAULT://TERMINAL
+                </div>
+                <pre class="terminal-body" id="terminal-lines" aria-live="polite"><span class="term-line" data-line="> INITIALIZING SECURE TERMINAL..."></span>
+<span class="term-line" data-line="> USER_ID: {{ username }}"></span>
+<span class="term-line" data-line="> CLEARANCE: AUTHORIZED"></span>
+<span class="term-line" data-line="> FILES_ENCRYPTED: {{ enc_count }}"></span>
+<span class="term-line" data-line="> FILES_RESTORED: {{ dec_count }}"></span>
+<span class="term-line" data-line="> VAULT_STATUS: ACTIVE & SECURE"></span>
+<span class="term-line" data-line="> CLOUD_NODES: NODE-A [OK] NODE-B [OK] NODE-C [OK]"></span>
+<span class="term-line" data-line="> LAST_SESSION: {{ last_ts }}"></span></pre>
             </div>
-            <div class="info-row">
-                <span class="label">Files Restored</span>
-                <span class="value">{{ dec_count }}</span>
+
+            <div class="kill-wrap">
+                <a href="/logout" class="kill-switch" id="kill-link" data-no-glitch="true">
+                    <span class="kill-switch-cover" aria-hidden="true"></span>
+                    <span class="kill-switch-label">Emergency logout</span>
+                </a>
             </div>
-        </div>
+        </section>
+    </main>
 
-        <div class="id-card">
-            <p class="id-label">VAULT SECURITY STATUS</p>
-            <div class="id-number">ACTIVE & SECURE</div>
-        </div>
+    <div id="session-flash" class="session-flash" aria-live="assertive">SESSION TERMINATED</div>
 
-       <style>
-            .action-buttons {
-                width: 100%;
-                display: flex;
-                justify-content: center; /* This centers the button horizontally */
-                margin-top: 30px;        /* Adds space above the button */
-                margin-bottom: 20px;     /* Adds space below the button */
-            }
-
-            .btn-logout {
-                padding: 12px 30px;
-                background: linear-gradient(90deg, #ff4b2b, #ff416c); /* Modern Red Gradient */
-                color: white;
-                border: none;
-                border-radius: 30px;
-                font-weight: 700;
-                font-size: 1rem;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(255, 75, 43, 0.3);
-                transition: all 0.3s ease;
-            }
-
-            .btn-logout:hover {
-                transform: scale(1.05);
-                box-shadow: 0 6px 20px rgba(255, 75, 43, 0.5);
-                filter: brightness(1.1);
-            }
-        </style>
-
-        <div class="action-buttons">
-            <a href="/logout" style="text-decoration: none;">
-                <button class="btn-logout">Log Out</button>
-            </a>
-        </div>
-
-        <a href="/" class="back-link">Back to Home</a>
-
-    </section>
-
+    <script src="/static/vault-global.js"></script>
+    <script src="/static/profile-terminal.js"></script>
+    <script>
+      (function () {
+        var kill = document.getElementById('kill-link');
+        var flash = document.getElementById('session-flash');
+        if (!kill) return;
+        kill.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (flash) flash.classList.add('session-flash--on');
+          document.body.classList.add('vault-glitch-out');
+          setTimeout(function () {
+            window.location.href = kill.getAttribute('href');
+          }, 500);
+        });
+      })();
+    </script>
 </body>
 </html>
