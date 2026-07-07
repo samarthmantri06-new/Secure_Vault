@@ -26,7 +26,9 @@ if not app.secret_key:
 S1, S2, S3 = "storage_1", "storage_2", "storage_3"
 PHOTOS_DIR = "photos"
 UPLOAD_DIR = "temp_uploads"
-DRIVE_FOLDER_ID = "1L8O4vBaSGSd6Ga9ZbLWeGPUgvNHVYNrP"
+DRIVE_FOLDER_ID = os.environ.get("DRIVE_FOLDER_ID")
+if not DRIVE_FOLDER_ID:
+    raise RuntimeError("DRIVE_FOLDER_ID environment variable is not set. Please set it in .env.")
 
 for folder in [S1, S2, S3, UPLOAD_DIR, PHOTOS_DIR]:
     os.makedirs(folder, exist_ok=True)

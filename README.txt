@@ -134,6 +134,19 @@ These are known gaps scoped out of the current version intentionally, not oversi
 * **Session cookies not yet marked `Secure` / `SameSite`:** Should be configured before any public deployment (`app.config['SESSION_COOKIE_SECURE']`, `app.config['SESSION_COOKIE_SAMESITE']`).
 * **Vault IDs are random 7-digit integers:** The space is large enough for personal use (with collision-retry now in place), but a UUID4 would be more robust at scale.
 
+### Known issues / history
+
+* **Compromised Secret Key:** The Flask secret key hardcoded in an earlier commit is considered compromised and was never used outside local development. Anyone forking/cloning should generate their own key via `.env.example` instructions before running the app. History rewrites (e.g., using BFG or filter-repo) are out of scope.
+
+---
+
+##  Running Tests
+
+To run the test suite (validates encryption round-trip, secret sharing threshold logic, and mock database ownership):
+```bash
+pytest tests/
+```
+
 ---
 
 ##  Before Pushing to GitHub
