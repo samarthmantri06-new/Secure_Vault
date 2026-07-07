@@ -29,7 +29,7 @@ SecureVault is built around a defence-in-depth architecture combining mathematic
 * The server does **NOT** persist your plaintext files after the response is sent.
 * The server does **NOT** persist the reconstructed decryption key — the key is held in memory only for the duration of the encrypt/decrypt request.
 * No single storage location holds enough information to recover a file on its own. Recovering a file requires **compromising a threshold of independent storage locations** (at least 3 of the 5 dispersed shard carriers).
-* The key is generated and reconstructed **server-side**. This is **NOT** a zero-knowledge architecture: the server sees the plaintext during encryption and the reconstructed key during decryption. The security guarantee is about dispersal and threshold access, not client-side-only encryption.
+* The key is generated and reconstructed **server-side**. The server sees the plaintext during encryption and the reconstructed key during decryption. The security guarantee is about dispersal and threshold access, not client-side-only encryption.
 * Do **NOT** rename the downloaded `.enc` artifacts. They contain identifiers used for key recovery.
 * Ownership enforcement runs at two levels:
   * Decrypt rejects artifacts whose filename does not match the current session user. *(UX guard — clearer error message; not the primary security boundary.)*
