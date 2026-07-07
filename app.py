@@ -15,7 +15,12 @@ from drive_uploader import upload_to_drive, download_vault_from_drive
 from dropbox_uploader import upload_to_dropbox, download_from_dropbox
 
 app = Flask(__name__)
-app.secret_key = "super_secret_vault_key_change_this_later"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError(
+        "FLASK_SECRET_KEY environment variable is not set. "
+        "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+    )
 
 # --- CONSTANTS & FOLDERS ---
 S1, S2, S3 = "storage_1", "storage_2", "storage_3"
@@ -199,7 +204,18 @@ def handle_encrypt():
             if file.filename == '': continue
             original_name = file.filename.replace("____", "_").replace(" ", "_")
             file_data = file.read()
-            vault_id = str(random.randint(1000000, 9999999))
+
+            # Generate a collision-safe vault_id: retry until the ID is not already
+            # present in the history table. Collisions are extremely rare (1-in-7M)
+            # but this makes the guarantee explicit.
+            conn_check = sqlite3.connect('database.db')
+            c_check = conn_check.cursor()
+            while True:
+                vault_id = str(random.randint(1000000, 9999999))
+                c_check.execute("SELECT 1 FROM history WHERE vault_id = ? LIMIT 1", (vault_id,))
+                if c_check.fetchone() is None:
+                    break
+            conn_check.close()
             master_key = AESGCM.generate_key(bit_length=256)
             base_name = os.path.splitext(original_name)[0]
             
@@ -263,7 +279,9 @@ def handle_decrypt():
                 vault_id = parts[0]
                 file_owner = parts[1]
 
-                # Ownership enforcement: fail loudly if a different user tries retrieval
+                # NOTE: This check is a UX convenience (clearer error message), not a security
+                # boundary. Actual access control is enforced cryptographically — decryption
+                # is impossible without reconstructing the key from a threshold of shards.
                 if file_owner != current_user:
                     return "Unauthorized vault artifact for this session.", 403
 
@@ -332,4 +350,7 @@ def handle_decrypt():
     return send_file(memory_zip, download_name='SecureVault_Restored.zip', as_attachment=True, mimetype='application/zip')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # FLASK_DEBUG must never be set to true in a deployed environment.
+    # Werkzeug's interactive debugger allows remote code execution if exposed.
+    debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+    app.run(debug=debug_mode)
