@@ -211,7 +211,7 @@ def handle_encrypt():
             conn_check = sqlite3.connect('database.db')
             c_check = conn_check.cursor()
             while True:
-                vault_id = str(random.randint(1000000, 9999999))
+                vault_id = str(random.randint(1_000_000, 9_999_999))
                 c_check.execute("SELECT 1 FROM history WHERE vault_id = ? LIMIT 1", (vault_id,))
                 if c_check.fetchone() is None:
                     break
