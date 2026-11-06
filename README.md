@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔐 SecureVault
+# SecureVault
 
 ### Distributed-key encrypted file vault
 
@@ -22,11 +22,11 @@ A Flask file vault that uses **threshold key reconstruction** to eliminate singl
 
 | Feature | What it does |
 |---|---|
-| 🔒 **AES-256-GCM encryption** | Ensures both confidentiality and integrity of your stored files. |
-| 🧩 **Threshold key splitting (3-of-5)** | The master encryption key is cryptographically divided into 5 separate shards. A minimum of exactly 3 shards is required for reconstruction. |
-| 🖼️ **Steganographic carrier encoding** | Each key shard is invisibly embedded into a PNG carrier image, adding an additional obfuscation layer. |
-| ☁️ **Multi-node dispersal** | Carrier images are distributed across physically isolated storage locations (local nodes, Google Drive and Dropbox), referred to in the UI as NODE-A / NODE-B / NODE-C. |
-| 🪪 **Ownership-bound artifacts** | Every encrypted vault artifact contains encoded identifiers; decryption is blocked server-side for any session that does not own the corresponding vault record. |
+| **AES-256-GCM encryption** | Ensures both confidentiality and integrity of your stored files. |
+| **Threshold key splitting (3-of-5)** | The master encryption key is cryptographically divided into 5 separate shards. A minimum of exactly 3 shards is required for reconstruction. |
+| **Steganographic carrier encoding** | Each key shard is invisibly embedded into a PNG carrier image, adding an additional obfuscation layer. |
+| **Multi-node dispersal** | Carrier images are distributed across physically isolated storage locations (local nodes, Google Drive and Dropbox), referred to in the UI as NODE-A / NODE-B / NODE-C. |
+| **Ownership-bound artifacts** | Every encrypted vault artifact contains encoded identifiers; decryption is blocked server-side for any session that does not own the corresponding vault record. |
 
 ### How it fits together
 
